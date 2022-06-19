@@ -9,7 +9,7 @@ yandex_disk = {
 #    "disk_file_path": "vk/photos/",
     "disk_file_path": "/",
     "TOKEN_YANDEX_DISK": "",
-    "number_of_photoes": 1
+    "number_of_photoes": 5
 }
 
 
