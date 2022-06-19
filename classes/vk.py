@@ -29,7 +29,19 @@ class VkPhoto:
 
     def get_photos(self):
         result = requests.get(self.url, self.params)
-        return result.json()
+        result.raise_for_status()
+        if result.status_code == 200:
+            try:
+                if result.json()["error"]["error_code"] == 5:
+                    raise ValueError('Ошибка авторизации вконтакте. Проверьте ТОКЕН в файле settings.py ')
+            except ValueError:
+                print('Ошибка авторизации вконтакте. Проверьте ТОКЕН в файле settings.py ')
+                raise
+            except KeyError:
+                return result.json()
+
+
+
 
     def json_to_list_obj(self):
         json_result = self.get_photos()

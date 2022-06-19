@@ -20,7 +20,8 @@ if __name__ == '__main__':
 
     vk = VkPhoto(url, owner_id, version_api_vk, access_token)
     result_list_obj = vk.json_to_list_obj()
-    numb_of_photos = len(result_list_obj)
+    if numb_of_photos > len(result_list_obj):
+        numb_of_photos = len(result_list_obj)
 
     ya_ = YaUploader(token=token_yd)
     path_yd = (f"{path_yd}vk_{owner_id}/")
