@@ -46,9 +46,6 @@ class VkPhoto:
 
     def json_to_list_obj(self):
         json_result = self.get_photos()
-        #file = json.dumps(json_result, indent=4)
-        #with open(f'1.json', 'w', encoding='utf-8') as f:
-        #    f.write(file)
         if json_result['response']['count']:
             photos = json_result['response']['items']
             for rphoto in photos:
