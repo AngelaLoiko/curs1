@@ -1,11 +1,9 @@
 import requests
 import settings
-# import configparser
-# settings = configparser.ConfigParser()  # создаём объекта парсера
-# settings.read("settings.ini")  # читаем конфиг
+
 class YaUploader:
 
-    def __init__(self, token: str = settings.yandex_disk["TOKEN_YANDEX_DISK"]):
+    def __init__(self, token):
         self.token = token
 
     def get_headers(self):
