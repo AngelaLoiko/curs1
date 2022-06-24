@@ -1,8 +1,16 @@
-import settings
 import requests
-#import json
 
 class Photo:
+    """
+    Класс Photo- характеристики фотографий которые сохраняются на яндекс диск.
+    Этому классу можно переопределять стандартные методы, чтобы сравнивать, сортировать или распечатывать информацию о фотогррафиях.
+    В этой реализации обошлись добавлением объектов класса в список, сортировать можно по любому полю класса методом sortkey(s),
+    где s- поле класса
+    @staticmethod
+    def sort_key(s):
+        return s.size
+    """
+
 
     def __init__(self, file_name, date, count_of_likes, size, height, width, url):
         self.file_name = file_name
@@ -14,19 +22,41 @@ class Photo:
         self.url = url
 
 class VkPhoto:
+    """
+    Класс VkPhoto имеет методы взаимодействия с сетью Вконтакте
+    и формирует, сортирует и возвращает список объектов типа Photo
+    """
 
-    def __init__(self, url, owner_id, version_api_vk, token: str = settings.user_record["TOKEN_VK"]):
+    def __init__(self, url, urlug, owner_id, version_api_vk, token, username=''):
         self.token = token
+        self.version = version_api_vk
         self.url = url
+        self.urlug = urlug
         self.list_of_photos = []
+        self.username = username
+        self.owner_id = owner_id
+        if username:
+            self.owner_id = self.get_owner_id()
         self.params = {
-            'owner_id': owner_id,
+            'owner_id': self.owner_id,
             'album_id': 'profile',
             'extended': 1,
             'photo_sizes': 0,
-            'access_token': token,
-            'v': version_api_vk
+            'access_token': self.token,
+            'v': self.version
     }
+
+    def get_owner_id(self):
+        self.params = {
+            'access_token': self.token,
+            'v': self.version
+        }
+        self.user_params = {
+            'user_ids': self.username,
+        }
+        result =  requests.get(self.urlug, params={**self.params, **self.user_params})
+        result.json()['response'][0]['id']
+        return result.json()['response'][0]['id']
 
     def get_photos(self):
         result = requests.get(self.url, self.params)
@@ -34,9 +64,9 @@ class VkPhoto:
         if result.status_code == 200:
             try:
                 if result.json()["error"]["error_code"] == 5:
-                    raise ValueError('Ошибка авторизации вконтакте. Проверьте ТОКЕН в файле settings.py ')
+                    raise ValueError('Ошибка авторизации вконтакте. Проверьте ТОКЕН в файле settings.ini ')
             except ValueError:
-                print('Ошибка авторизации вконтакте. Проверьте ТОКЕН в файле settings.py ')
+                print('Ошибка авторизации вконтакте. Проверьте ТОКЕН в файле settings.ini ')
                 raise
             except KeyError:
                 return result.json()

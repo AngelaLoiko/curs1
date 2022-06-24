@@ -1,45 +1,20 @@
-import json
-from tqdm import tqdm
-import settings
-from classes.YaUploader import YaUploader
+"""
+Учебная программа сохранения на яндекс.диск фотографий пользователей ВК
+В settings.ini заполните либо имя пользователя вконтакте, либо его цифровой идентификатор (в реальной жизни, пользователь вводил бы это через поля ввода)
+Если будет заполнено и то, и другое, предпочтение будет отдаваться имени пользователя
+На яндекс диске создается одноименный директорий, в котором будут сохраняться фотографии пользователя
+Программа возвращает json-файл, имя которого формируется в зависимости от имени или идентификатора пользователя
+Также не забудьте вставить в settings.ini рабочий токен
+"""
+
 from classes.vk import VkPhoto
+from utils import pilot
 
 if __name__ == '__main__':
-    owner_id = settings.user_record["id"]
-    url = settings.user_record["URL"]
-    access_token = settings.user_record["TOKEN_VK"]
-    version_api_vk = settings.user_record["version_api_vk"]
-    token_yd = settings.yandex_disk["TOKEN_YANDEX_DISK"]
-    path_yd = settings.yandex_disk["disk_file_path"]
-    numb_of_photos = settings.yandex_disk["number_of_photoes"]
 
-    def create_json(user_id, list_result_json):
-        file = json.dumps(list_result_json, indent=4)
-        with open(f'{owner_id}.json', 'w', encoding='utf-8') as f:
-            f.write(file)
+    owner_id, username, url, access_token, version_api_vk, token_yd, path_yd, numb_of_photos, urlug  = pilot.get_from_settings()
 
-    vk = VkPhoto(url, owner_id, version_api_vk, access_token)
-    result_list_obj = vk.json_to_list_obj()
-    if numb_of_photos > len(result_list_obj):
-        numb_of_photos = len(result_list_obj)
-
-    ya_ = YaUploader(token=token_yd)
-    path_yd = (f"{path_yd}vk_{owner_id}/")
-    ya_.create_folder(path_yd)
-    names = set()
-    list_result_json = []
-    for i in tqdm(range(0, numb_of_photos)):
-        if result_list_obj[i].count_of_likes in names:
-            filename = (f'{path_yd}{result_list_obj[i].count_of_likes}_{result_list_obj[i].date}.jpg')
-        else:
-            filename = (f'{path_yd}{result_list_obj[i].count_of_likes}.jpg')
-            names.add(result_list_obj[i].count_of_likes)
-
-        ya_.get_upload_file(file_link=result_list_obj[i].url, disk_file_path=filename)
-
-        list_result_json.append({
-                'file_name': filename,
-                'size': f'{result_list_obj[i].height}x{result_list_obj[i].width}'
-            })
-
-    create_json(owner_id, list_result_json)
+    vk = VkPhoto(url, urlug, owner_id, version_api_vk, access_token, username)
+    if username:
+        owner_id = username
+    pilot.create_json_on_disk(vk.json_to_list_obj(), numb_of_photos, token_yd, path_yd, owner_id)
