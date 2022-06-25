@@ -18,3 +18,4 @@ if __name__ == '__main__':
     if username:
         owner_id = username
     pilot.create_json_on_disk(vk.json_to_list_obj(), numb_of_photos, token_yd, path_yd, owner_id)
+

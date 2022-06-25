@@ -55,8 +55,16 @@ class VkPhoto:
             'user_ids': self.username,
         }
         result =  requests.get(self.urlug, params={**self.params, **self.user_params})
-        result.json()['response'][0]['id']
-        return result.json()['response'][0]['id']
+        result.raise_for_status()
+        if result.status_code == 200:
+            try:
+                if result.json()["error"]["error_code"] == 5:
+                    raise ValueError('Ошибка авторизации вконтакте. Проверьте ТОКЕН в файле settings.ini ')
+            except ValueError:
+                 print('Ошибка авторизации вконтакте. Проверьте ТОКЕН в файле settings.ini ')
+                 raise
+            except KeyError:
+                 return result.json()['response'][0]['id']
 
     def get_photos(self):
         result = requests.get(self.url, self.params)

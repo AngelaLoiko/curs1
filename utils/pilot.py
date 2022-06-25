@@ -27,6 +27,20 @@ def get_from_settings():
         print("Введите либо имя пользователя, либо его цифровой идентификатор!")
         sys.exit()
 
+    try:
+        if not(access_token):
+            raise ValueError
+    except ValueError:
+        print("Вы не ввели токен Вконтакте!")
+        sys.exit()
+
+    try:
+        if not(token_yd):
+            raise ValueError
+    except ValueError:
+        print("Вы не ввели токен Яндекс-диска!")
+        sys.exit()
+
 
 
     return owner_id, username, url, access_token, version_api_vk, token_yd, path_yd, numb_of_photos, urlug

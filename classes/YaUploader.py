@@ -1,5 +1,4 @@
 import requests
-import settings
 
 class YaUploader:
 
@@ -24,4 +23,4 @@ class YaUploader:
         params = { "url": file_link, "path": disk_file_path, "overwrite": True}
         response = requests.post(url=upload_url, params=params, headers=headers)
         response.raise_for_status()
-
+        # TODO: обработать исключения
