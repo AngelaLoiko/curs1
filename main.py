@@ -11,9 +11,7 @@ from classes.vk import VkPhoto
 from utils import pilot
 
 if __name__ == '__main__':
-
     owner_id, username, url, access_token, version_api_vk, token_yd, path_yd, numb_of_photos, urlug  = pilot.get_from_settings()
-
     vk = VkPhoto(url, urlug, owner_id, version_api_vk, access_token, username)
     if username:
         owner_id = username
